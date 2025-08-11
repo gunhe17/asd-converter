@@ -1,0 +1,12 @@
+# env
+.env
+
+# venv
+.venv
+
+# python cache
+__pycache__
+.pytest_cache
+
+# macOS
+.DS_Store
