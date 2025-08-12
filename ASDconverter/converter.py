@@ -1,24 +1,26 @@
-import os
-from pathlib import Path
-
 from ASDconverter.device.realsense import Realsense
 from ASDconverter.device.tobii import Tobii
-
+from ASDconverter.device.player import Player
+from ASDconverter.filter.filter import Filter
+from ASDconverter.matcher.matcher import Matcher
 
 class Converter:
     def __init__(self):
-        # realsense
         self.realsense = Realsense()
-        # tobii
         self.tobii = Tobii()
+        self.player = Player()
 
+        self.filter = Filter()
+        self.matcher = Matcher()
 
-    def convert(self, input_dir: str, output_dir: str):
-        # RealSense 변환
-        # self.realsense.convert(input_dir, output_dir)
-        
-        # Tobii 변환
+    def convert(self, input_dir, output_dir):
+        self.realsense.convert(input_dir, output_dir)
         self.tobii.convert(input_dir, output_dir)
+        self.player.convert(input_dir, output_dir)
+
+        self.filter.filter_frames(output_dir)
+
+        self.matcher.match_frames(output_dir)
 
 
 def argparser():

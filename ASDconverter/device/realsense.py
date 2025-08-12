@@ -1,5 +1,7 @@
 import csv
 import time
+import subprocess
+
 from pathlib import Path
 import pyrealsense2 as rs
 import multiprocessing as mp
@@ -29,14 +31,12 @@ class Realsense:
     def _convert_color(self, args):
         rs_convert_exe, bag_path, color_dir = args
         cmd = [str(rs_convert_exe), "-i", str(bag_path), "-p", str(color_dir / self.color_prefix), "-c"]
-        # return subprocess.run(cmd, capture_output=True).returncode == 0
-        return True
+        return subprocess.run(cmd, capture_output=True).returncode == 0
 
     def _convert_depth(self, args):
         rs_convert_exe, bag_path, depth_dir = args
         cmd = [str(rs_convert_exe), "-i", str(bag_path), "-p", str(depth_dir / self.depth_prefix), "-d"]
-        # return subprocess.run(cmd, capture_output=True).returncode == 0
-        return True
+        return subprocess.run(cmd, capture_output=True).returncode == 0
 
     def _generate_csv(self, args):
         bag_path, csv_dir = args
