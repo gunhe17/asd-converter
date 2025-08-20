@@ -9,6 +9,24 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# #
+# helper
+
+import time
+from functools import wraps
+
+def measure_time(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(f"{func.__name__}: {end - start:.2f}초")
+        return result
+    return wrapper
+
+# #
+# class
 
 class Realsense:
     def __init__(self):
@@ -27,16 +45,18 @@ class Realsense:
 
     ##
     # Private
-        
+    
+    @measure_time
     def _convert_color(self, args):
         rs_convert_exe, bag_path, color_dir = args
         cmd = [str(rs_convert_exe), "-i", str(bag_path), "-p", str(color_dir / self.color_prefix), "-c"]
-        return subprocess.run(cmd, capture_output=True).returncode == 0
+        return subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
 
+    @measure_time
     def _convert_depth(self, args):
         rs_convert_exe, bag_path, depth_dir = args
         cmd = [str(rs_convert_exe), "-i", str(bag_path), "-p", str(depth_dir / self.depth_prefix), "-d"]
-        return subprocess.run(cmd, capture_output=True).returncode == 0
+        return subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
 
     def _generate_csv(self, args):
         bag_path, csv_dir = args
