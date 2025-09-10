@@ -2,3 +2,5 @@ python-dotenv
 
 pytz
 pyrealsense2
+
+numpy
