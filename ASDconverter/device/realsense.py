@@ -49,17 +49,24 @@ class Realsense:
     @measure_time
     def _convert_color(self, args):
         rs_convert_exe, bag_path, color_dir = args
+        print(f"  컬러 프레임 추출 중... ({bag_path.name})")
         cmd = [str(rs_convert_exe), "-i", str(bag_path), "-p", str(color_dir / self.color_prefix), "-c"]
-        return subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+        result = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+        print(f"  컬러 프레임 추출 {'완료' if result else '실패'}")
+        return result
 
     @measure_time
     def _convert_depth(self, args):
         rs_convert_exe, bag_path, depth_dir = args
+        print(f"  깊이 프레임 추출 중... ({bag_path.name})")
         cmd = [str(rs_convert_exe), "-i", str(bag_path), "-p", str(depth_dir / self.depth_prefix), "-d"]
-        return subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+        result = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+        print(f"  깊이 프레임 추출 {'완료' if result else '실패'}")
+        return result
 
     def _generate_csv(self, args):
         bag_path, csv_dir = args
+        print(f"  프레임 메타데이터 생성 중... ({bag_path.name})")
         pipeline = rs.pipeline()    # type: ignore
         config = rs.config()        # type: ignore
         config.enable_device_from_file(str(bag_path), repeat_playback=False)
@@ -121,6 +128,7 @@ class Realsense:
                 pass
             finally:
                 pipeline.stop()
+        print(f"  프레임 메타데이터 생성 완료")
         return True
     
     def _update_csv_indices(self, csv_file: Path):
@@ -188,24 +196,33 @@ class Realsense:
         input_path = Path(input_dir)
         output_path = Path(output_dir)
         
+        print("RealSense 세션 폴더 검색 중...")
         # session_*_realsense 폴더들 찾기
         session_dirs = sorted(input_path.glob("session_*_realsense"))
         if not session_dirs:
+            print("RealSense 세션 폴더를 찾을 수 없습니다.")
             return False
         
+        print(f"발견된 세션 폴더: {len(session_dirs)}개")
+        
         success = True
-        for session_dir in session_dirs:
+        for i, session_dir in enumerate(session_dirs, 1):
+            print(f"\n[{i}/{len(session_dirs)}] {session_dir.name} 처리 중...")
             bag_files = list(session_dir.glob("*.bag"))
             if not bag_files:
+                print(f"  BAG 파일을 찾을 수 없습니다.")
                 continue
                 
             bag_file = str(bag_files[0])
             if not self.unit(bag_file, str(output_path)):
+                print(f"  변환 실패: {bag_file}")
                 success = False
         
         # 모든 변환 완료 후 CSV 인덱스 업데이트
         if success:
+            print("\nCSV 인덱스 업데이트 중...")
             csv_file = output_path / self.csv_dir_name / self.csv_filename
             self._update_csv_indices(csv_file)
+            print("CSV 인덱스 업데이트 완료")
         
         return success

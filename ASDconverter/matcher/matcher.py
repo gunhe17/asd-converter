@@ -332,6 +332,7 @@ class Matcher:
 
     def match_frames(self, output_dir):
         """필터링된 realsense와 tobii 프레임을 전역 최적 매칭"""
+        print("프레임 매칭 시작...")
         output_path = Path(output_dir)
         
         # 입력 파일 확인
@@ -341,7 +342,7 @@ class Matcher:
         
         for file in [realsense_file, tobii_file, played_file]:
             if not file.exists():
-                print(f"Required file not found: {file}")
+                print(f"필요한 파일을 찾을 수 없습니다: {file}")
                 return False
         
         print("=" * 60)
@@ -401,6 +402,7 @@ class Matcher:
             print(f"Total rows: {len(matched_rows):,}")
             print(f"Columns: {len(fieldnames)}")
         
+        print("\n프레임 매칭 완료!")
         return True
     
 if __name__ == "__main__":

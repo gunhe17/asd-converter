@@ -158,16 +158,23 @@ class Played:
         input_path = Path(input_dir)
         output_path = Path(output_dir)
         
+        print("Play 이벤트 데이터 처리 중...")
         (output_path / self.csv_dir_name).mkdir(parents=True, exist_ok=True)
         
         play_csv = input_path / "play.csv"
         if not play_csv.exists():
+            print("play.csv 파일을 찾을 수 없습니다.")
             return False
         
+        print("Play-Stop 쌍 생성 중...")
         output_csv_path = output_path / self.csv_dir_name / self.csv_filename
         success = self._convert_play_csv(play_csv, output_csv_path)
         
         if success:
+            print("CSV 인덱스 업데이트 중...")
             self._update_csv_indices(output_csv_path)
+            print("Play 이벤트 데이터 변환 완료")
+        else:
+            print("Play 이벤트 데이터 변환 실패")
         
         return success

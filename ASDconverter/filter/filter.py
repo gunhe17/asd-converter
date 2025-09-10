@@ -110,12 +110,13 @@ class Filter:
 
     def filter_frames(self, output_dir):
         """모든 프레임 데이터를 played 기준으로 필터링"""
+        print("프레임 필터링 시작...")
         output_path = Path(output_dir)
         
         # played CSV에서 유효한 범위 추출
         played_csv = output_path / self.played_csv_path
         if not played_csv.exists():
-            print(f"Played CSV file not found: {played_csv}")
+            print(f"Played CSV 파일을 찾을 수 없습니다: {played_csv}")
             return False
         
         print("=" * 50)
@@ -156,4 +157,5 @@ class Filter:
         print(f"  - {realsense_output}")
         print(f"  - {tobii_output}")
         
+        print("\n프레임 필터링 완료!")
         return True

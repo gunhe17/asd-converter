@@ -54,16 +54,25 @@ class Tobii:
         input_path = Path(input_dir)
         output_path = Path(output_dir)
         
+        print("Tobii 세션 폴더 검색 중...")
         (output_path / self.csv_dir_name).mkdir(parents=True, exist_ok=True)
         
         session_dirs = sorted(input_path.glob("session_*_tobii"))
         if not session_dirs:
+            print("Tobii 세션 폴더를 찾을 수 없습니다.")
             return False
+        
+        print(f"발견된 세션 폴더: {len(session_dirs)}개")
+        print("Tobii CSV 파일 병합 중...")
         
         output_csv_path = output_path / self.csv_dir_name / self.csv_filename
         success = self._merge_csv_files(session_dirs, output_csv_path)
         
         if success:
+            print("CSV 인덱스 업데이트 중...")
             self._update_csv_indices(output_csv_path)
+            print("CSV 인덱스 업데이트 완료")
+        else:
+            print("CSV 병합 실패")
         
         return success
